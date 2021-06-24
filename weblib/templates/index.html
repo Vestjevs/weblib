@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="jumbotron">
+        <h1>Электронная библиотека</h1>
+        <p class="lead">Тестовое web-приложение по управлению электронной библиотекой.</p>
+        {% if not session.logged_in %}
+            <p><span id="reg-button" class="btn btn-lg btn-success" role="button" href="{{ url_for('registration') }}">Регистрация</span></p>
+        {% else %}
+            <a id="button" class="btn btn-lg btn-success" role="button" href="{{ url_for('books') }}">Книги</a>
+            <a id="button" class="btn btn-lg btn-success" role="button" href="{{ url_for('authors') }}">Писатели</a>
+        {% endif %}
+    </div>
+
+    <div class="row marketing">
+    </div>
+
+{% endblock %}
+

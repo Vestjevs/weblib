@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="row marketing">
+        <ol class="breadcrumb">
+            <li><a href="/">Главная</a></li>
+            {% if session.logged_in %}
+                <li><a href="/new/author">Добавить писателя</a></li>
+            {% endif %}
+            <li class="active">Писатели</li>
+        </ol>
+        {% for author in authors %}
+            <div class="col-lg-4">
+                <h3><a href="author/{{author.id}}">{{ author.name }}</a></h3>
+                <p><b>Имя:</b> {{ author.name }}</p>
+                <p><b>Книги:</b>
+                    {% for book in author.books %}
+                        {{ book.title }}, 
+                    {% endfor %}
+                </p>
+                <p><b>Биография:</b>{{ author.biography }}</p>
+                <p><b>ID:</b>{{ author.id }}</p>
+            </div>
+        {% endfor %} 
+    </div>
+{% endblock %}

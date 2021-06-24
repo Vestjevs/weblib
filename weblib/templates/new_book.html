@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="row marketing">
+        <ol class="breadcrumb">
+          <li><a href="/">Главная</a></li>
+          <li><a href="/books">Книги</a></li>
+          <li class="active">Новая книга</li>
+        </ol>
+        <form method="POST" action="">
+            <div class="form-group">
+                {{ form.csrf_token }}
+                {{ form.title.label }} {{ form.title(class_='form-control') }}
+                {{ form.abstract.label }} {{ form.abstract(class_='form-control') }}
+                {% if authors %}
+                    <label for="title">Авторы книги:</label>
+                    <select name="authors" multiple class="form-control">
+                        {% for author in authors %}
+                            <option value="{{ author.id }}">{{ author.name}} </option>
+                        {% endfor %}
+                    </select>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary">Cохранить изменения</button>
+    </div>
+{% endblock %}

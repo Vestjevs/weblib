@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Электронная библиотека</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            $('#reg-button').click(function(){
+                $('.jumbotron').detach();
+                $('.alert').detach();
+                $('.row').load('/registration form');
+                return false;
+            });
+
+            $('#log-button').click(function(){
+                $('.jumbotron').detach();
+                $('.alert').detach();
+                $('.row').load('/login form');
+                return false;
+            });
+
+            $(document).on('submit', 'form#reg', function(){
+                var $form = $('form#reg')
+                var username = $('#username').val();
+                var password_one = $('#password_one').val();
+                var password_two = $('#password_two').val();
+
+                $('.alert').detach();
+                if (username === '' || password_one === '' || password_two === ''){
+                    $form.before('<div class="alert alert-warning">Заполните все поля!</div>');
+                    return false;
+                }
+                if (password_one !== password_two) {
+                    $form.before('<div class="alert alert-warning">Введите одинаковые пароли!</div>');
+                    return false;
+                }
+                $.post(
+                    "/registration",
+                    $form.serialize(),
+                    function( data ) {
+                        data = JSON.parse(data)
+                        $form.before('<div class="alert alert-warning">' + data.message + '</div>');
+                        if (data.success){
+                            var delay = 2000;
+                            var url = '/'
+                            setTimeout(function(){ window.location = url }, delay);
+                        }
+                    });
+                return false;
+            });
+
+            
+            $(document).on('submit', 'form#login', function(){
+                var $form = $('form#login')
+                var username = $('#username').val();
+                var password = $('#password').val();
+
+                $('.alert').detach();
+
+                if (username === '' || password === ''){
+                    $form.before('<div class="alert alert-warning">Заполните все поля!</div>');
+                    return false;
+                }
+                $.post(
+                    "/login",
+                    $form.serialize(),
+                    function( data ) {
+                        data = JSON.parse(data)
+                        $form.before('<div class="alert alert-warning">' + data.message + '</div>');
+                        if (data.success){
+                            var delay = 2000;
+                            var url = '/'
+                            setTimeout(function(){ window.location = url }, delay);
+                        }
+                    });
+                return false;
+            });
+
+
+            $(document).on('submit', 'form.search', function(){
+                var $form = $('form.search')
+
+                $('.alert').detach();
+                $('table').detach();
+
+                $.post(
+                    "/search",
+                    $form.serialize(),
+                    function( data ) {
+                        data = JSON.parse(data)
+                        if (data.success){
+                            $('html').load('/books #book_{% if book %}{{ book.id }}{% endif %}');
+                        } else {
+                            $form.before('<div class="alert alert-warning">' + data.message + '</div>');
+                        }
+                    });
+                //return false;
+            });
+
+
+            $(document).on('submit', 'form.books', function(){
+                var $form = $('form.books')
+
+                $('.alert').detach();
+
+                $.post(
+                    "/book/{% if book %}{{ book.id }}{% endif %}",
+                    $form.serialize(),
+                    function( data ) {
+                        data = JSON.parse(data)
+                        if (data.success){
+                            $form.before('<div class="alert alert-success">' + data.message + '</div>');
+                        }
+                    });
+                return false;
+            });
+
+        });
+    </script>
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <ul class="nav nav-pills pull-right">
+                <li class=""><a href="/">Главная</a></li>
+                <li class=""><a href="/search">Поиск</a></li>
+                <li class=""><a href="/books">Книги</a></li>
+                <li class=""><a href="/authors">Писатели</a></li>
+                {% if not session.logged_in %}
+                    <li><a id="log-button" href="{{ url_for('login') }}">Вход</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('logout') }}">Выход</a></li>
+                {% endif %}
+            </ul>
+            <h3 class="text-muted">Электронная библиотека</h3>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}  
+                <div class="alert alert-warning">    
+                <ul>
+                {% for message in messages %}
+                    <li>{{ message }} </li>
+                {% endfor %}
+                </ul>
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+
+        <div class="footer">
+            <p>Powered by <a href="http://flask.pocoo.org/">Flask</a></p>
+        </div>
+    </div>
+</body>
+</html>
+

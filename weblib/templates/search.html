@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="row marketing">
+
+        <form method="POST" class="search">
+            <div class="form-group">
+                {{ form.csrf_token }}
+                {{ form.query.label }} {{ form.query(class_='form-control', placeholder='Пушкин') }}
+            </div>
+            <button type="submit" class="btn btn-primary">Искать</button>
+        </form>
+
+        {% if fail %}
+            <br><div class="alert alert-warning">Ничего не найдено...</div>
+        {% endif %}
+
+        {% if books %}
+            {% for book in books %}
+                <div id="book_{{ book.id }}" class="col-lg-6">
+                    <h3><a href="book/{{book.id}}">{{ book.title }}</a></h3>
+                    <p><b>Название:</b> {{ book.title }}</p>
+                    <p><b>Авторы:</b>
+                        {% for author in book.authors %}
+                            {{ author.name }}, 
+                        {% endfor %}
+                    </p>
+                    <p><b>Аннотация:</b> {{ book.abstract }}</p>
+                    <p><b>ID:</b> {{ book.id }}</p>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+    </div>
+
+{% endblock %}
